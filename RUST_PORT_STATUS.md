@@ -4,9 +4,9 @@
 
 This document tracks the progress of porting the **Certify** Active Directory Certificate Services enumeration tool from C# (.NET Framework 4.7.2) to Rust. The port aims to create a memory-safe, cross-platform (where possible) version while maintaining full feature parity with the original implementation.
 
-**Current Status:** Phases 1-3 Complete (Foundation + Core Models + Vulnerability Detection)
-**Progress:** ~25% of total implementation
-**Tests:** 105 passing (88 unit + 17 doc) - 100% pass rate
+**Current Status:** Phases 1-4 Complete (Foundation + Core Models + Vulnerability Detection + LDAP/Display)
+**Progress:** ~35% of total implementation
+**Tests:** 123 passing (100 unit + 23 doc) - 100% pass rate
 **Code Quality:** Zero compiler warnings, follows Rust best practices
 
 ---
@@ -87,12 +87,33 @@ This document tracks the progress of porting the **Certify** Active Directory Ce
 
 ---
 
+### Phase 4: LDAP Operations and Display (Complete - 2/2 iterations)
+
+**Objective:** Implement LDAP connectivity and output formatting.
+
+| Component | Status | LOC | Tests | Description |
+|-----------|--------|-----|-------|-------------|
+| LdapOperations | ✅ | 515 | 3+4 | LDAP query functions for CAs and templates |
+| DisplayUtil | ✅ | 595 | 9+2 | Formatted output for PKI objects |
+
+**Key Achievements:**
+- ✅ LDAP connection management with authentication
+- ✅ get_enterprise_cas() for retrieving Enterprise CAs
+- ✅ get_certificate_templates() for retrieving templates
+- ✅ get_pki_objects() for generic PKI object retrieval
+- ✅ Comprehensive formatting for CAs, templates, and ACEs
+- ✅ Vulnerability summary reporting
+- ✅ EKU name resolution for common OIDs
+- ✅ **123 tests passing (100 unit + 23 doc)**
+
+---
+
 ## 📊 Current Statistics
 
 ### Code Metrics
-- **Total Lines of Code:** ~3,700+ lines
-- **Modules Created:** 16 Rust modules
-- **Tests:** 105 (100% passing)
+- **Total Lines of Code:** ~4,800+ lines
+- **Modules Created:** 18 Rust modules
+- **Tests:** 123 (100% passing)
 - **Test Coverage:** All public APIs covered
 - **Documentation:** Full rustdoc for all public items
 
@@ -103,10 +124,13 @@ anyhow = "1.0"        # Application errors
 regex = "1.10"        # Pattern matching
 uuid = "1.11"         # GUID support
 bitflags = "2.4"      # Flag enums
+ldap3 = "0.11"        # LDAP connectivity
 ```
 
 ### Git History
 ```
+18407b2 Phase 4 Complete: LDAP Operations and Display Utilities
+0b3733e Phase 4 Iteration 1: Implement LdapOperations module
 f77f6df Phase 3 Iteration 2: CertificateAuthorityEnterprise (ESC6-16)
 15d1b6f Phase 3 Iteration 1: CertificateTemplate (ESC1-4, 9, 13, 15)
 6eecaa6 Phase 2 Iteration 3: LDAP parser
@@ -118,20 +142,6 @@ c013699 Phase 1 Iteration 3: SID utility
 ---
 
 ## 🔄 Remaining Work
-
-### Phase 4: LDAP Operations and Display (Estimated: 28 hours)
-
-**Status:** Not started
-
-| Component | LOC (Est) | Priority | Dependencies |
-|-----------|-----------|----------|--------------|
-| LdapOperations | 313 | High | ldap3 crate |
-| DisplayUtil | 382 | Medium | All domain models |
-
-**Blockers:**
-- Requires `ldap3` crate for LDAP connectivity
-- Needs full security descriptor parsing
-- ACL display formatting
 
 ---
 
@@ -282,9 +292,9 @@ c013699 Phase 1 Iteration 3: SID utility
 - Plan: Use windows-rs or custom parser
 
 **LDAP Integration:**
-- LdapAttributes container ready
-- Need ldap3 crate integration
-- Need real SearchResult mapping
+- ✅ ldap3 crate integrated
+- ✅ Full LDAP query support for CAs and templates
+- ✅ SearchResult mapping to domain models
 
 **HTTP/NTLM Support:**
 - ESC8 detection requires HTTP probing
@@ -302,20 +312,20 @@ c013699 Phase 1 Iteration 3: SID utility
 | Phase 1 | ✅ Complete | 100% | 47 |
 | Phase 2 | ✅ Complete | 100% | 41 |
 | Phase 3 | ✅ Complete | 100% | 17 |
-| Phase 4 | ⏳ Pending | 0% | 0 |
+| Phase 4 | ✅ Complete | 100% | 18 |
 | Phase 5 | ⏳ Pending | 0% | 0 |
 | Phase 6 | ⏳ Pending | 0% | 0 |
 | Phase 7 | ⏳ Pending | 0% | 0 |
 | Phases 8-10 | ⏳ Pending | 0% | 0 |
 | Phase 11 | ⏳ Pending | 0% | 0 |
-| **TOTAL** | **In Progress** | **~25%** | **105** |
+| **TOTAL** | **In Progress** | **~35%** | **123** |
 
 ### Estimated Remaining Work
 
 | Category | Hours (Est) | Percentage |
 |----------|-------------|------------|
-| Completed (Phases 1-3) | ~80 | 25% |
-| LDAP/Display (Phase 4) | 28 | 9% |
+| Completed (Phases 1-4) | ~108 | 35% |
+| LDAP/Display (Phase 4) | ✅ Complete | - |
 | Windows Utils (Phase 5) | 14 | 4% |
 | Crypto (Phase 6) | 38 | 12% |
 | Enrollment/Admin (Phase 7) | 46 | 14% |
@@ -402,29 +412,35 @@ c013699 Phase 1 Iteration 3: SID utility
 
 ## 📝 Conclusion
 
-The foundational work (Phases 1-3) represents the most architecturally challenging portion of the port. All core types, binary parsing, and vulnerability detection logic are now implemented in idiomatic Rust.
+The foundational work (Phases 1-4) represents the most architecturally challenging portion of the port. All core types, binary parsing, vulnerability detection, LDAP connectivity, and display formatting are now implemented in idiomatic Rust.
+
+**Completed Infrastructure:**
+- **Phases 1-3:** Core domain models, vulnerability detection, binary parsing
+- **Phase 4:** LDAP operations and display utilities
 
 The remaining phases are more straightforward:
-- **Phase 4-7:** Utility implementations (LDAP, crypto, COM)
+- **Phase 5-7:** Utility implementations (Windows COM, crypto, HTTP)
 - **Phase 8-11:** Command wrappers around existing functionality
 
 **Quality Metrics:**
 - ✅ Zero compiler warnings
-- ✅ 100% test pass rate
+- ✅ 100% test pass rate (123 tests)
 - ✅ Full documentation coverage
 - ✅ Idiomatic Rust patterns
 
 **Production Readiness:**
 - ✅ Core domain models stable
 - ✅ Vulnerability detection accurate
+- ✅ LDAP integration complete
+- ✅ Display formatting implemented
 - ⚠️ Missing command implementations
-- ⚠️ Missing LDAP integration
 - ⚠️ Missing Windows COM interop
+- ⚠️ Missing cryptography operations
 
-The project is on track for completion with an estimated **~250 hours** of remaining development work.
+The project is on track for completion with an estimated **~220 hours** of remaining development work.
 
 ---
 
 *Last Updated: 2025-11-08*
 *Branch: `claude/csharp-to-rust-port-011CUutjWPasKYRMMz4rtNbb`*
-*Commits: 6 | Tests: 105 | LOC: 3,700+*
+*Commits: 9 | Tests: 123 | LOC: 4,800+*
