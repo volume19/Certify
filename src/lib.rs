@@ -13,6 +13,7 @@
 
 pub mod domain;
 pub mod error;
+pub mod util;
 
 /// Library version matching original C# implementation
 pub const VERSION: &str = "2.0.0";
