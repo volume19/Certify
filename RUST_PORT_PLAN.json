@@ -1,0 +1,1340 @@
+{
+  "plan_version": "1.0.0",
+  "project_metadata": {
+    "source_language": "C#",
+    "source_framework": ".NET Framework 4.7.2",
+    "source_total_loc": 6513,
+    "target_language": "Rust",
+    "target_edition": "2021",
+    "target_platforms": [
+      "x86_64-pc-windows-msvc",
+      "x86_64-unknown-linux-gnu"
+    ],
+    "purpose": "Active Directory Certificate Services enumeration and security auditing tool",
+    "security_context": "Authorized penetration testing and defensive security auditing",
+    "key_challenges": [
+      "COM interop (Windows-only)",
+      "DCOM remote instantiation",
+      "LDAP/Active Directory operations",
+      "Windows cryptography APIs",
+      "Binary security descriptor parsing",
+      "Token impersonation",
+      "Remote registry access"
+    ]
+  },
+  "component_map": [
+    {
+      "csharp_file": "Program.cs",
+      "namespace": "Certify",
+      "estimated_loc": 197,
+      "rust_module_path": "src/main.rs",
+      "dependencies": ["clap CLI parser", "all command modules"],
+      "notes": "Entry point, command routing, MTA thread initialization"
+    },
+    {
+      "csharp_file": "Domain/CommonOids.cs",
+      "namespace": "Certify.Domain",
+      "estimated_loc": 18,
+      "rust_module_path": "src/domain/oids.rs",
+      "dependencies": [],
+      "notes": "Simple constants, straightforward port"
+    },
+    {
+      "csharp_file": "Domain/ADObject.cs",
+      "namespace": "Certify.Domain",
+      "estimated_loc": 16,
+      "rust_module_path": "src/domain/ad_object.rs",
+      "dependencies": ["windows security types"],
+      "notes": "Base class pattern → trait or struct composition"
+    },
+    {
+      "csharp_file": "Domain/PKIObject.cs",
+      "namespace": "Certify.Domain",
+      "estimated_loc": 35,
+      "rust_module_path": "src/domain/pki_object.rs",
+      "dependencies": ["ADObject"],
+      "notes": "Simple domain model"
+    },
+    {
+      "csharp_file": "Domain/EnrollmentAgentRestriction.cs",
+      "namespace": "Certify.Domain",
+      "estimated_loc": 38,
+      "rust_module_path": "src/domain/enrollment_agent_restriction.rs",
+      "dependencies": ["windows SID parsing"],
+      "notes": "Binary security descriptor parsing from CommonAce"
+    },
+    {
+      "csharp_file": "Domain/CertificateAuthority.cs",
+      "namespace": "Certify.Domain",
+      "estimated_loc": 64,
+      "rust_module_path": "src/domain/certificate_authority.rs",
+      "dependencies": ["ADObject", "X509 certificates"],
+      "notes": "Base CA model with IDisposable → Drop trait"
+    },
+    {
+      "csharp_file": "Domain/CertificateAuthorityWebServices.cs",
+      "namespace": "Certify.Domain",
+      "estimated_loc": 12,
+      "rust_module_path": "src/domain/ca_web_services.rs",
+      "dependencies": [],
+      "notes": "Simple data structure"
+    },
+    {
+      "csharp_file": "Domain/CertificateTemplate.cs",
+      "namespace": "Certify.Domain",
+      "estimated_loc": 315,
+      "rust_module_path": "src/domain/certificate_template.rs",
+      "dependencies": ["ADObject", "vulnerability detection"],
+      "notes": "Complex enum flags, vulnerability checks (ESC1-4, 9, 13, 15)"
+    },
+    {
+      "csharp_file": "Domain/CertificateAuthorityEnterprise.cs",
+      "namespace": "Certify.Domain",
+      "estimated_loc": 331,
+      "rust_module_path": "src/domain/ca_enterprise.rs",
+      "dependencies": ["CertificateAuthority", "remote registry", "vulnerability detection"],
+      "notes": "Complex model with remote registry access, vulnerability checks (ESC6-8, 11, 16)"
+    },
+    {
+      "csharp_file": "Util/SidUtil.cs",
+      "namespace": "Certify.Util",
+      "estimated_loc": 26,
+      "rust_module_path": "src/util/sid.rs",
+      "dependencies": ["windows SID APIs"],
+      "notes": "SID validation and classification"
+    },
+    {
+      "csharp_file": "Util/ElevationUtil.cs",
+      "namespace": "Certify.Util",
+      "estimated_loc": 104,
+      "rust_module_path": "src/util/elevation.rs",
+      "dependencies": ["windows token APIs"],
+      "notes": "SYSTEM token impersonation via P/Invoke, security-sensitive"
+    },
+    {
+      "csharp_file": "Util/DistributedComUtil.cs",
+      "namespace": "Certify.Util",
+      "estimated_loc": 116,
+      "rust_module_path": "src/util/dcom.rs",
+      "dependencies": ["ole32.dll P/Invoke"],
+      "notes": "DCOM initialization and remote COM instantiation"
+    },
+    {
+      "csharp_file": "Util/CertTransformUtil.cs",
+      "namespace": "Certify.Util",
+      "estimated_loc": 150,
+      "rust_module_path": "src/util/cert_transform.rs",
+      "dependencies": ["BouncyCastle → RustCrypto", "crypt32.dll"],
+      "notes": "PFX/PEM conversion, certificate chain building"
+    },
+    {
+      "csharp_file": "Util/HttpUtil.cs",
+      "namespace": "Certify.Util",
+      "estimated_loc": 315,
+      "rust_module_path": "src/util/http.rs",
+      "dependencies": ["NTLM authentication", "channel binding"],
+      "notes": "HTTP authentication testing with NTLM via secur32.dll"
+    },
+    {
+      "csharp_file": "Util/DisplayUtil.cs",
+      "namespace": "Certify.Util",
+      "estimated_loc": 382,
+      "rust_module_path": "src/util/display.rs",
+      "dependencies": ["all domain models"],
+      "notes": "Console output formatting, ACL display"
+    },
+    {
+      "csharp_file": "Lib/LdapParser.cs",
+      "namespace": "Certify.Lib",
+      "estimated_loc": 324,
+      "rust_module_path": "src/lib/ldap_parser.rs",
+      "dependencies": ["domain models", "binary parsing"],
+      "notes": "LDAP attribute parsing, complex flag enums, time period conversion"
+    },
+    {
+      "csharp_file": "Lib/LdapOperations.cs",
+      "namespace": "Certify.Lib",
+      "estimated_loc": 313,
+      "rust_module_path": "src/lib/ldap_operations.rs",
+      "dependencies": ["System.DirectoryServices → ldap3 crate", "LdapParser"],
+      "notes": "LDAP queries for PKI objects, requires ldap3 crate + custom security descriptor parsing"
+    },
+    {
+      "csharp_file": "Lib/CertSidExtension.cs",
+      "namespace": "Certify.Lib",
+      "estimated_loc": 203,
+      "rust_module_path": "src/lib/cert_sid_extension.rs",
+      "dependencies": ["crypt32.dll P/Invoke", "X.509 encoding"],
+      "notes": "SID encoding as X.509 extension, complex binary structures"
+    },
+    {
+      "csharp_file": "Lib/CertEnrollment.cs",
+      "namespace": "Certify.Lib",
+      "estimated_loc": 469,
+      "rust_module_path": "src/lib/cert_enrollment.rs",
+      "dependencies": ["CERTENROLLLib COM", "CERTCLILib COM", "reflection"],
+      "notes": "Certificate enrollment via COM, PKCS#10/PKCS#7 generation, Type.GetTypeFromProgID reflection"
+    },
+    {
+      "csharp_file": "Lib/CertAdmin.cs",
+      "namespace": "Certify.Lib",
+      "estimated_loc": 511,
+      "rust_module_path": "src/lib/cert_admin.rs",
+      "dependencies": ["ICertAdminD2 COM interface", "DCOM"],
+      "notes": "CA administration via custom COM interface, binary CERTTRANSBLOB structures"
+    },
+    {
+      "csharp_file": "Commands/EnumPkiObjects.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 112,
+      "rust_module_path": "src/commands/enum_pki_objects.rs",
+      "dependencies": ["LdapOperations", "DisplayUtil"],
+      "notes": "Simple enumeration command"
+    },
+    {
+      "csharp_file": "Commands/CertRequestDownload.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 104,
+      "rust_module_path": "src/commands/cert_request_download.rs",
+      "dependencies": ["CertEnrollment"],
+      "notes": "Download issued certificate"
+    },
+    {
+      "csharp_file": "Commands/CertRequestRenewal.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 119,
+      "rust_module_path": "src/commands/cert_request_renewal.rs",
+      "dependencies": ["CertEnrollment"],
+      "notes": "Certificate renewal"
+    },
+    {
+      "csharp_file": "Commands/EnumCas.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 224,
+      "rust_module_path": "src/commands/enum_cas.rs",
+      "dependencies": ["LdapOperations", "DisplayUtil", "vulnerability detection"],
+      "notes": "CA enumeration with vulnerability analysis"
+    },
+    {
+      "csharp_file": "Commands/CertRequest.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 235,
+      "rust_module_path": "src/commands/cert_request.rs",
+      "dependencies": ["CertEnrollment", "SAN/SID extensions"],
+      "notes": "Certificate request with custom subject/SAN"
+    },
+    {
+      "csharp_file": "Commands/EnumTemplates.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 251,
+      "rust_module_path": "src/commands/enum_templates.rs",
+      "dependencies": ["LdapOperations", "DisplayUtil", "vulnerability detection"],
+      "notes": "Template enumeration with vulnerability analysis"
+    },
+    {
+      "csharp_file": "Commands/CertRequestOnBehalf.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 157,
+      "rust_module_path": "src/commands/cert_request_onbehalf.rs",
+      "dependencies": ["CertEnrollment", "enrollment agent"],
+      "notes": "Enrollment agent certificate request (PKCS#7)"
+    },
+    {
+      "csharp_file": "Commands/ManageSelf.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 294,
+      "rust_module_path": "src/commands/manage_self.rs",
+      "dependencies": ["crypt32.dll", "certificate store operations"],
+      "notes": "Local certificate store enumeration and export"
+    },
+    {
+      "csharp_file": "Commands/ManageTemplate.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 300,
+      "rust_module_path": "src/commands/manage_template.rs",
+      "dependencies": ["LdapOperations", "template modification"],
+      "notes": "Template management operations"
+    },
+    {
+      "csharp_file": "Commands/CertForge.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 301,
+      "rust_module_path": "src/commands/cert_forge.rs",
+      "dependencies": ["certificate forging", "BouncyCastle"],
+      "notes": "Certificate forgery (shadow credentials), uses BouncyCastle extensively"
+    },
+    {
+      "csharp_file": "Commands/ManageCa.cs",
+      "namespace": "Certify.Commands",
+      "estimated_loc": 441,
+      "rust_module_path": "src/commands/manage_ca.rs",
+      "dependencies": ["CertAdmin", "DCOM", "CA management"],
+      "notes": "CA management operations via ICertAdminD2"
+    },
+    {
+      "csharp_file": "Properties/AssemblyInfo.cs",
+      "namespace": "Certify",
+      "estimated_loc": 36,
+      "rust_module_path": "Cargo.toml",
+      "dependencies": [],
+      "notes": "Assembly metadata → Cargo.toml metadata"
+    }
+  ],
+  "public_api_map": {
+    "entry_points": [
+      {
+        "csharp": "static void Main(string[] args)",
+        "rust": "fn main() -> Result<(), Box<dyn Error>>",
+        "ownership": "Takes owned String Vec from args, consumes CLI options",
+        "notes": "Entry point, no MTA attribute needed in Rust (handled by windows crate)"
+      },
+      {
+        "csharp": "static string MainString(string args)",
+        "rust": "pub fn main_string(args: &str) -> Result<String, Box<dyn Error>>",
+        "ownership": "Borrows args string, returns owned String output",
+        "notes": "Programmatic invocation with captured output"
+      }
+    ],
+    "commands": [
+      {
+        "csharp": "EnumCas.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: EnumCasOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "All commands return Result with custom error type"
+      },
+      {
+        "csharp": "EnumTemplates.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: EnumTemplatesOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "Template enumeration with filters"
+      },
+      {
+        "csharp": "EnumPkiObjects.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: EnumPkiObjectsOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "PKI object enumeration"
+      },
+      {
+        "csharp": "CertRequest.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: CertRequestOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "Certificate request with custom extensions"
+      },
+      {
+        "csharp": "CertRequestOnBehalf.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: CertRequestOnBehalfOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "Enrollment agent request"
+      },
+      {
+        "csharp": "CertRequestDownload.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: CertRequestDownloadOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "Download issued certificate"
+      },
+      {
+        "csharp": "CertRequestRenewal.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: CertRequestRenewalOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "Certificate renewal"
+      },
+      {
+        "csharp": "CertForge.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: CertForgeOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "Certificate forgery operations"
+      },
+      {
+        "csharp": "ManageCa.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: ManageCaOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "CA management via DCOM"
+      },
+      {
+        "csharp": "ManageTemplate.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: ManageTemplateOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "Template management"
+      },
+      {
+        "csharp": "ManageSelf.Execute(Options opts) : int",
+        "rust": "pub fn execute(opts: ManageSelfOptions) -> Result<i32, CertifyError>",
+        "ownership": "Takes owned options struct",
+        "notes": "Local certificate operations"
+      }
+    ],
+    "domain_models": [
+      {
+        "csharp": "class CertificateAuthority : ADObject, IDisposable",
+        "rust": "pub struct CertificateAuthority { ... } impl Drop for CertificateAuthority",
+        "ownership": "Owns X509Certificate2 Vec, implements Drop for cleanup",
+        "notes": "IDisposable → Drop trait for certificate cleanup"
+      },
+      {
+        "csharp": "class CertificateAuthorityEnterprise : CertificateAuthority",
+        "rust": "pub struct CertificateAuthorityEnterprise { base: CertificateAuthority, ... }",
+        "ownership": "Composition over inheritance, owns base CA",
+        "notes": "No inheritance in Rust, use struct composition"
+      },
+      {
+        "csharp": "class CertificateTemplate : ADObject",
+        "rust": "pub struct CertificateTemplate { ... }",
+        "ownership": "Owns all fields, vulnerabilities in HashMap<u32, String>",
+        "notes": "Complex flag enums use bitflags! macro"
+      },
+      {
+        "csharp": "Dictionary<int, string> Vulnerabilities",
+        "rust": "HashMap<u32, String>",
+        "ownership": "Owned HashMap, keys are ESC numbers",
+        "notes": "Store vulnerability IDs and descriptions"
+      }
+    ],
+    "lib_functions": [
+      {
+        "csharp": "LdapOperations.GetEnterpriseCAs(domain, showAllPermissions, hideAdmins, machineAccountQuota, ldapServer) : List<CertificateAuthorityEnterprise>",
+        "rust": "pub fn get_enterprise_cas(domain: Option<&str>, show_all_permissions: bool, hide_admins: bool, machine_account_quota: i32, ldap_server: Option<&str>) -> Result<Vec<CertificateAuthorityEnterprise>, LdapError>",
+        "ownership": "Borrows optional strings, returns owned Vec",
+        "notes": "LDAP queries require ldap3 crate"
+      },
+      {
+        "csharp": "LdapOperations.GetCertificateTemplates(domain, enrolleeSuppliesSubject, clientAuthentication, enrollmentAgentTemplate, vulnerable, ldapServer) : List<CertificateTemplate>",
+        "rust": "pub fn get_certificate_templates(domain: Option<&str>, enrollee_supplies_subject: bool, client_authentication: bool, enrollment_agent_template: bool, vulnerable: bool, ldap_server: Option<&str>) -> Result<Vec<CertificateTemplate>, LdapError>",
+        "ownership": "Borrows optional strings, returns owned Vec",
+        "notes": "Template enumeration with filters"
+      },
+      {
+        "csharp": "CertEnrollment.CreateCertRequestMessage(ca, templateName, altName, sid, sidExtension, applicationPolicies, keyUsage, keySize, keyAlgorithm) : string",
+        "rust": "pub fn create_cert_request_message(ca: &str, template_name: &str, alt_name: Option<&str>, sid: Option<Sid>, sid_extension: bool, application_policies: Option<Vec<String>>, key_usage: Option<KeyUsage>, key_size: u32, key_algorithm: &str) -> Result<String, EnrollmentError>",
+        "ownership": "Borrows strings, returns owned base64 CSR string",
+        "notes": "COM interop on Windows, use RustCrypto on Linux for CSR generation"
+      },
+      {
+        "csharp": "CertEnrollment.SendCertificateRequest(message, ca) : int",
+        "rust": "pub fn send_certificate_request(message: &str, ca: &str) -> Result<i32, EnrollmentError>",
+        "ownership": "Borrows strings, returns request ID",
+        "notes": "Submit CSR to CA, Windows-only via CCertRequest COM"
+      },
+      {
+        "csharp": "CertAdmin.RevokeCertificate(caComputer, caName, serialNumber, reason, whenCertificateRevoked) : void",
+        "rust": "pub fn revoke_certificate(ca_computer: &str, ca_name: &str, serial_number: &str, reason: u32, when_revoked: SystemTime) -> Result<(), CertAdminError>",
+        "ownership": "Borrows strings, consumes SystemTime",
+        "notes": "Windows-only DCOM operation via ICertAdminD2"
+      },
+      {
+        "csharp": "CertTransformUtil.ExportToPEM(cert, privateKey) : string",
+        "rust": "pub fn export_to_pem(cert: &X509Certificate, private_key: &RsaPrivateKey) -> Result<String, CryptoError>",
+        "ownership": "Borrows cert and key, returns owned PEM string",
+        "notes": "BouncyCastle → RustCrypto (pem, pkcs8 crates)"
+      },
+      {
+        "csharp": "DisplayUtil.PrintEnterpriseCaInfo(ca, showAllPermissions, hideAdmins) : void",
+        "rust": "pub fn print_enterprise_ca_info(ca: &CertificateAuthorityEnterprise, show_all_permissions: bool, hide_admins: bool) -> Result<(), DisplayError>",
+        "ownership": "Borrows CA, prints to stdout",
+        "notes": "Console output formatting"
+      }
+    ],
+    "util_functions": [
+      {
+        "csharp": "ElevationUtil.ImpersonateWinlogon() : bool",
+        "rust": "pub fn impersonate_winlogon() -> Result<TokenGuard, ElevationError>",
+        "ownership": "Returns RAII guard that reverts on drop",
+        "notes": "Security-sensitive, returns guard to ensure RevertToSelf, Windows-only"
+      },
+      {
+        "csharp": "DistributedComUtil.CreateInstanceFromCLSID(clsid, server) : T",
+        "rust": "pub fn create_instance_from_clsid<T: Interface>(clsid: &GUID, server: &str) -> Result<T, ComError>",
+        "ownership": "Borrows GUID and server string, returns COM interface",
+        "notes": "DCOM remote instantiation, Windows-only, COM lifetime managed by windows crate"
+      },
+      {
+        "csharp": "SidUtil.IsComputerAccount(sid) : bool",
+        "rust": "pub fn is_computer_account(sid: &Sid) -> bool",
+        "ownership": "Borrows SID",
+        "notes": "SID classification utility"
+      }
+    ]
+  },
+  "tricky_patterns": [
+    {
+      "pattern": "COM Interop (CERTENROLLLib, CERTCLILib)",
+      "location": "Lib/CertEnrollment.cs (lines 1-469), Lib/CertAdmin.cs (lines 1-511)",
+      "challenge": "C# uses COM interop via embedded interop assemblies with automatic reference counting",
+      "rust_mitigation": {
+        "strategy": "Use windows-rs crate with COM interface definitions",
+        "implementation": "Define COM interfaces with #[com_interface] macro, use ComPtr<T> for lifetime management",
+        "safety": "All COM calls are unsafe, wrap in safe abstractions, document lifetime requirements",
+        "cross_platform": "COM is Windows-only; on Linux, create stub implementations that return NotSupported error"
+      }
+    },
+    {
+      "pattern": "DCOM Remote Instantiation (CoCreateInstanceEx)",
+      "location": "Util/DistributedComUtil.cs (lines 50-116)",
+      "challenge": "Remote COM object creation with COSERVERINFO structure and multi-interface queries",
+      "rust_mitigation": {
+        "strategy": "Use windows::Win32::System::Com::CoCreateInstanceEx with #[repr(C)] COSERVERINFO",
+        "implementation": "Define MULTI_QI structure, marshal GUID arrays carefully, handle HRESULT errors",
+        "safety": "Unsafe block required, validate server name, handle network failures gracefully",
+        "cross_platform": "Windows-only, return NotSupported on Linux"
+      }
+    },
+    {
+      "pattern": "LDAP Binary Attribute Parsing (Security Descriptors, Flags)",
+      "location": "Lib/LdapParser.cs (lines 1-324), Domain/CertificateTemplate.cs (lines 50-150)",
+      "challenge": "Binary LDAP attributes like nTSecurityDescriptor, flags, and time periods need manual parsing",
+      "rust_mitigation": {
+        "strategy": "Use ldap3 crate for queries, implement custom binary parsers for attributes",
+        "implementation": "Define parsers for: RawSecurityDescriptor (binary ACL format), flag enums (use bitflags!), time periods (i64 conversion)",
+        "safety": "Validate all byte array bounds, use nom parser combinator for structured parsing",
+        "cross_platform": "LDAP client works cross-platform, but AD-specific attributes are Windows-only"
+      }
+    },
+    {
+      "pattern": "Explicit Layout Structs with FieldOffset",
+      "location": "Lib/CertSidExtension.cs (lines 30-90), Lib/CertAdmin.cs (lines 20-50)",
+      "challenge": "C# [StructLayout(LayoutKind.Explicit)] with [FieldOffset] for union-like structures",
+      "rust_mitigation": {
+        "strategy": "Use #[repr(C)] with manual offset calculation or #[repr(C)] unions",
+        "implementation": "Example: CERT_ALT_NAME_ENTRY uses union for pOtherName/pDirectoryName, implement as Rust union with #[repr(C)]",
+        "safety": "All union field access is unsafe, provide safe wrapper functions that validate tag fields",
+        "testing": "Add layout tests using std::mem::offset_of! macro to verify binary compatibility"
+      }
+    },
+    {
+      "pattern": "GCHandle Pinning for P/Invoke",
+      "location": "Lib/CertAdmin.cs (lines 150-200), Lib/CertSidExtension.cs (lines 100-150)",
+      "challenge": "C# pins byte arrays for P/Invoke, must free handle in finally block",
+      "rust_mitigation": {
+        "strategy": "Use Box::pin() or stack-allocated arrays for P/Invoke",
+        "implementation": "For CERTTRANSBLOB: let data = Box::pin(bytes); let ptr = data.as_ptr(); pass ptr to FFI",
+        "safety": "Pinned data must outlive FFI call, use lifetimes or RAII wrappers",
+        "pattern": "Create struct BlobGuard { data: Pin<Box<[u8]>>, ptr: *const u8 } impl Drop"
+      }
+    },
+    {
+      "pattern": "Type.GetTypeFromProgID() Reflection",
+      "location": "Lib/CertEnrollment.cs (lines 50-100)",
+      "challenge": "Dynamic COM object creation via ProgID strings like 'X509Enrollment.CX509PrivateKey'",
+      "rust_mitigation": {
+        "strategy": "Replace with static COM interface definitions in windows-rs",
+        "implementation": "Use windows::Win32::Security::Cryptography::IX509PrivateKey directly, no reflection needed",
+        "safety": "Static typing is safer than reflection, compile-time interface verification",
+        "notes": "ProgID was used for late binding, Rust uses early binding via interface definitions"
+      }
+    },
+    {
+      "pattern": "Remote Registry Access",
+      "location": "Domain/CertificateAuthorityEnterprise.cs (lines 100-200)",
+      "challenge": "RegistryKey.OpenRemoteBaseKey() with remote server name",
+      "rust_mitigation": {
+        "strategy": "Use windows::Win32::System::Registry::RegConnectRegistryW for remote access",
+        "implementation": "Wrap in safe abstraction: struct RemoteRegistryKey { hkey: HKEY } impl Drop",
+        "safety": "All registry operations are unsafe, validate paths, handle access denied errors",
+        "cross_platform": "Windows-only, return NotSupported on Linux"
+      }
+    },
+    {
+      "pattern": "Token Impersonation (SYSTEM)",
+      "location": "Util/ElevationUtil.cs (lines 1-104)",
+      "challenge": "OpenProcessToken → DuplicateToken → ImpersonateLoggedOnUser with proper cleanup",
+      "rust_mitigation": {
+        "strategy": "RAII pattern with Drop trait for automatic RevertToSelf",
+        "implementation": "struct TokenGuard { token: HANDLE } impl Drop { RevertToSelf() }",
+        "safety": "All token operations are unsafe, validate process handle, ensure drop on panic (use scopeguard crate)",
+        "security": "Document privilege requirements, log impersonation attempts, add audit trail"
+      }
+    },
+    {
+      "pattern": "Exception Handling (Try-Catch-Finally)",
+      "location": "Throughout all files",
+      "challenge": "C# exceptions for error handling with finally blocks for cleanup",
+      "rust_mitigation": {
+        "strategy": "Result<T, E> with thiserror for error types, Drop trait for cleanup",
+        "implementation": "Define enum CertifyError with variants for each error category (LdapError, ComError, CryptoError, etc.)",
+        "pattern": "Use ? operator for propagation, implement From<T> for error conversions",
+        "finally_equivalent": "Drop trait or scopeguard::defer! macro for cleanup"
+      }
+    },
+    {
+      "pattern": "Binary Cryptographic Structures (ASN.1, DER)",
+      "location": "Lib/CertSidExtension.cs (lines 1-203), Util/CertTransformUtil.cs (lines 1-150)",
+      "challenge": "CryptEncodeObjectEx for ASN.1 DER encoding of X.509 extensions",
+      "rust_mitigation": {
+        "strategy": "Use der crate (DER encoding), x509-cert crate (X.509 structures)",
+        "implementation": "Define ASN.1 structures with #[derive(Sequence)] from der_derive",
+        "safety": "DER encoding is safe, but parsing requires validation of all input data",
+        "testing": "Add round-trip tests (encode → decode → compare), test with known-good certificates"
+      }
+    },
+    {
+      "pattern": "BouncyCastle Cryptography (PFX/PEM)",
+      "location": "Util/CertTransformUtil.cs (lines 1-150), Commands/CertForge.cs (lines 1-301)",
+      "challenge": "BouncyCastle used for PKCS#12 (PFX) export and PEM conversion",
+      "rust_mitigation": {
+        "strategy": "Use RustCrypto crates: rsa, x509-cert, pkcs8, pkcs12, pem",
+        "implementation": "Replace Pkcs12Store with pkcs12 crate, use pem crate for PEM encoding",
+        "safety": "RustCrypto crates are memory-safe, but crypto operations require careful key handling",
+        "notes": "RustCrypto is well-maintained, audited, and widely used in Rust ecosystem"
+      }
+    },
+    {
+      "pattern": "NTLM Authentication (secur32.dll)",
+      "location": "Util/HttpUtil.cs (lines 1-315)",
+      "challenge": "Manual NTLM handshake via AcquireCredentialsHandle, InitializeSecurityContext",
+      "rust_mitigation": {
+        "strategy": "Use windows-sys for secur32.dll bindings, or sspi crate for higher-level API",
+        "implementation": "Define SecHandle, SecBuffer structures with #[repr(C)], implement NTLM client",
+        "safety": "All SSPI calls are unsafe, validate buffer sizes, zero credential buffers on drop",
+        "alternative": "Consider using reqwest crate with windows-auth feature for HTTP NTLM"
+      }
+    }
+  ],
+  "prioritized_files": [
+    {
+      "phase": 1,
+      "title": "Foundation and Infrastructure",
+      "files": [
+        {
+          "file": "Domain/CommonOids.cs",
+          "rationale": "Simple constants, no dependencies, validates build setup",
+          "estimated_effort_hours": 0.5
+        },
+        {
+          "file": "Util/SidUtil.cs",
+          "rationale": "Small utility, minimal Windows API, good for testing P/Invoke setup",
+          "estimated_effort_hours": 2
+        },
+        {
+          "file": "Domain/ADObject.cs",
+          "rationale": "Base type for domain models, establishes pattern for inheritance → composition",
+          "estimated_effort_hours": 1
+        },
+        {
+          "file": "Domain/PKIObject.cs",
+          "rationale": "Simple domain model extending ADObject",
+          "estimated_effort_hours": 1
+        },
+        {
+          "file": "Domain/CertificateAuthorityWebServices.cs",
+          "rationale": "Simple data structure, no complex logic",
+          "estimated_effort_hours": 0.5
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "title": "Core Domain Models and Error Handling",
+      "files": [
+        {
+          "file": "Domain/EnrollmentAgentRestriction.cs",
+          "rationale": "Binary parsing exercise, introduces security descriptor parsing pattern",
+          "estimated_effort_hours": 3
+        },
+        {
+          "file": "Domain/CertificateAuthority.cs",
+          "rationale": "Core CA model with IDisposable → Drop pattern",
+          "estimated_effort_hours": 4
+        },
+        {
+          "file": "Lib/LdapParser.cs",
+          "rationale": "Core parsing logic needed by many modules, complex flag handling",
+          "estimated_effort_hours": 12
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "title": "Complex Domain Models with Vulnerability Detection",
+      "files": [
+        {
+          "file": "Domain/CertificateTemplate.cs",
+          "rationale": "Complex flags, vulnerability checks (ESC1-4, 9, 13, 15), depends on LdapParser",
+          "estimated_effort_hours": 16
+        },
+        {
+          "file": "Domain/CertificateAuthorityEnterprise.cs",
+          "rationale": "Most complex domain model, remote registry, vulnerability checks (ESC6-8, 11, 16)",
+          "estimated_effort_hours": 20
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "title": "LDAP Operations and Display",
+      "files": [
+        {
+          "file": "Lib/LdapOperations.cs",
+          "rationale": "LDAP queries, DirectoryServices → ldap3 migration, depends on LdapParser",
+          "estimated_effort_hours": 18
+        },
+        {
+          "file": "Util/DisplayUtil.cs",
+          "rationale": "Output formatting, depends on all domain models, can be developed in parallel",
+          "estimated_effort_hours": 10
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "title": "Windows-Specific Utilities (Platform Layer)",
+      "files": [
+        {
+          "file": "Util/DistributedComUtil.cs",
+          "rationale": "DCOM initialization, COM interop foundation",
+          "estimated_effort_hours": 8
+        },
+        {
+          "file": "Util/ElevationUtil.cs",
+          "rationale": "Token impersonation, security-sensitive, needs careful testing",
+          "estimated_effort_hours": 6
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "title": "Cryptography and Certificate Operations",
+      "files": [
+        {
+          "file": "Lib/CertSidExtension.cs",
+          "rationale": "ASN.1/DER encoding, introduces crypto patterns",
+          "estimated_effort_hours": 10
+        },
+        {
+          "file": "Util/CertTransformUtil.cs",
+          "rationale": "BouncyCastle → RustCrypto migration, PFX/PEM conversion",
+          "estimated_effort_hours": 12
+        },
+        {
+          "file": "Util/HttpUtil.cs",
+          "rationale": "NTLM authentication, HTTP client, complex SSPI usage",
+          "estimated_effort_hours": 16
+        }
+      ]
+    },
+    {
+      "phase": 7,
+      "title": "Certificate Enrollment and Administration (COM-Heavy)",
+      "files": [
+        {
+          "file": "Lib/CertEnrollment.cs",
+          "rationale": "Complex COM interop, PKCS#10/PKCS#7 generation, critical functionality",
+          "estimated_effort_hours": 24
+        },
+        {
+          "file": "Lib/CertAdmin.cs",
+          "rationale": "Custom COM interface, DCOM operations, binary structures",
+          "estimated_effort_hours": 22
+        }
+      ]
+    },
+    {
+      "phase": 8,
+      "title": "Simple Commands (Read-Only)",
+      "files": [
+        {
+          "file": "Commands/EnumPkiObjects.cs",
+          "rationale": "Simple enumeration, validates LDAP + display stack",
+          "estimated_effort_hours": 4
+        },
+        {
+          "file": "Commands/EnumCas.cs",
+          "rationale": "CA enumeration with vulnerability detection",
+          "estimated_effort_hours": 8
+        },
+        {
+          "file": "Commands/EnumTemplates.cs",
+          "rationale": "Template enumeration with filters and vulnerability detection",
+          "estimated_effort_hours": 8
+        }
+      ]
+    },
+    {
+      "phase": 9,
+      "title": "Certificate Request Commands",
+      "files": [
+        {
+          "file": "Commands/CertRequestDownload.cs",
+          "rationale": "Simple download operation",
+          "estimated_effort_hours": 4
+        },
+        {
+          "file": "Commands/CertRequestRenewal.cs",
+          "rationale": "Certificate renewal operation",
+          "estimated_effort_hours": 5
+        },
+        {
+          "file": "Commands/CertRequest.cs",
+          "rationale": "Core request functionality with SAN/SID extensions",
+          "estimated_effort_hours": 10
+        },
+        {
+          "file": "Commands/CertRequestOnBehalf.cs",
+          "rationale": "Enrollment agent operations",
+          "estimated_effort_hours": 8
+        }
+      ]
+    },
+    {
+      "phase": 10,
+      "title": "Advanced Commands (Write Operations)",
+      "files": [
+        {
+          "file": "Commands/ManageSelf.cs",
+          "rationale": "Local certificate store operations",
+          "estimated_effort_hours": 12
+        },
+        {
+          "file": "Commands/ManageTemplate.cs",
+          "rationale": "Template modification operations",
+          "estimated_effort_hours": 14
+        },
+        {
+          "file": "Commands/CertForge.cs",
+          "rationale": "Certificate forgery, heavy crypto usage",
+          "estimated_effort_hours": 16
+        },
+        {
+          "file": "Commands/ManageCa.cs",
+          "rationale": "Complex CA management via DCOM",
+          "estimated_effort_hours": 18
+        }
+      ]
+    },
+    {
+      "phase": 11,
+      "title": "Entry Point and CLI",
+      "files": [
+        {
+          "file": "Program.cs",
+          "rationale": "Main entry point, command routing, depends on all commands",
+          "estimated_effort_hours": 6
+        }
+      ]
+    }
+  ],
+  "tests_spec": {
+    "unit_tests": [
+      {
+        "test_id": "UT-001",
+        "module": "domain::oids",
+        "description": "Verify OID constant values match C# implementation",
+        "inputs": "None (constants)",
+        "expected_outputs": "OID strings match specification",
+        "fixtures": []
+      },
+      {
+        "test_id": "UT-002",
+        "module": "util::sid",
+        "description": "Test SID validation and computer account detection",
+        "inputs": ["S-1-5-21-...-...-...-1001$ (computer)", "S-1-5-21-...-...-...-1001 (user)"],
+        "expected_outputs": "is_computer_account returns true for $ suffix",
+        "fixtures": ["test_sids.json"]
+      },
+      {
+        "test_id": "UT-003",
+        "module": "domain::enrollment_agent_restriction",
+        "description": "Parse binary ACE to EnrollmentAgentRestriction",
+        "inputs": "Binary ACE data from test fixture",
+        "expected_outputs": "Parsed agent SID, template GUID, target SIDs",
+        "fixtures": ["sample_ace.bin"]
+      },
+      {
+        "test_id": "UT-004",
+        "module": "lib::ldap_parser",
+        "description": "Parse LDAP attributes (flags, time periods, security descriptors)",
+        "inputs": "LDAP attribute bytes from real AD query",
+        "expected_outputs": "Correct flag values, time periods in human-readable format",
+        "fixtures": ["ldap_attributes_template.bin", "ldap_attributes_ca.bin"]
+      },
+      {
+        "test_id": "UT-005",
+        "module": "domain::certificate_template",
+        "description": "Vulnerability detection (ESC1-4, 9, 13, 15)",
+        "inputs": "Template with known vulnerabilities",
+        "expected_outputs": "Vulnerabilities HashMap contains correct ESC numbers",
+        "fixtures": ["vulnerable_template_esc1.json", "vulnerable_template_esc2.json"]
+      },
+      {
+        "test_id": "UT-006",
+        "module": "domain::ca_enterprise",
+        "description": "Vulnerability detection (ESC6-8, 11, 16)",
+        "inputs": "CA with known vulnerabilities",
+        "expected_outputs": "Vulnerabilities HashMap contains correct ESC numbers",
+        "fixtures": ["vulnerable_ca_esc6.json", "vulnerable_ca_esc8.json"]
+      },
+      {
+        "test_id": "UT-007",
+        "module": "lib::cert_sid_extension",
+        "description": "Encode SID as X.509 extension (ASN.1 DER)",
+        "inputs": "SID: S-1-5-21-...-...-...-1001",
+        "expected_outputs": "DER-encoded OCTET STRING in OtherName, matches C# output",
+        "fixtures": ["sid_extension_golden.der"]
+      },
+      {
+        "test_id": "UT-008",
+        "module": "util::cert_transform",
+        "description": "PFX to PEM conversion",
+        "inputs": "Sample PFX file with certificate and private key",
+        "expected_outputs": "PEM-formatted certificate and private key strings",
+        "fixtures": ["sample.pfx", "sample_cert.pem", "sample_key.pem"]
+      },
+      {
+        "test_id": "UT-009",
+        "module": "util::cert_transform",
+        "description": "Certificate chain building",
+        "inputs": "End-entity cert, intermediate cert, root cert",
+        "expected_outputs": "Full certificate chain in correct order",
+        "fixtures": ["ee_cert.pem", "intermediate.pem", "root.pem"]
+      },
+      {
+        "test_id": "UT-010",
+        "module": "util::elevation (Windows-only)",
+        "description": "TokenGuard RAII pattern",
+        "inputs": "None (requires SYSTEM process running)",
+        "expected_outputs": "Impersonation succeeds, RevertToSelf called on drop",
+        "fixtures": [],
+        "notes": "Requires admin privileges, mock in CI"
+      }
+    ],
+    "integration_tests": [
+      {
+        "test_id": "IT-001",
+        "description": "enum-templates command with mock LDAP server",
+        "setup": "Mock LDAP server with sample certificate templates",
+        "inputs": "certify enum-templates --vulnerable",
+        "expected_outputs": "List of vulnerable templates with ESC numbers",
+        "fixtures": ["mock_ldap_templates.ldif"]
+      },
+      {
+        "test_id": "IT-002",
+        "description": "enum-cas command with mock LDAP server",
+        "setup": "Mock LDAP server with sample CAs",
+        "inputs": "certify enum-cas --vulnerable",
+        "expected_outputs": "List of vulnerable CAs with ESC numbers",
+        "fixtures": ["mock_ldap_cas.ldif"]
+      },
+      {
+        "test_id": "IT-003",
+        "description": "enum-pki-objects command",
+        "setup": "Mock LDAP server with PKI objects",
+        "inputs": "certify enum-pki-objects",
+        "expected_outputs": "List of all PKI objects with permissions",
+        "fixtures": ["mock_ldap_pki.ldif"]
+      },
+      {
+        "test_id": "IT-004",
+        "description": "request command CSR generation (Windows-only)",
+        "setup": "Mock CA server",
+        "inputs": "certify request --ca CA01 --template User --altname admin@corp.local",
+        "expected_outputs": "PKCS#10 CSR with SAN extension",
+        "fixtures": [],
+        "notes": "Windows-only, requires COM, mock CCertRequest"
+      },
+      {
+        "test_id": "IT-005",
+        "description": "manage-self command certificate export (Windows-only)",
+        "setup": "Certificate in local machine store",
+        "inputs": "certify manage-self --export-pfx",
+        "expected_outputs": "PFX file with certificate and private key",
+        "fixtures": ["test_cert_installed.pfx"],
+        "notes": "Windows-only, requires certificate store access"
+      },
+      {
+        "test_id": "IT-006",
+        "description": "forge command certificate forgery",
+        "setup": "CA certificate and private key",
+        "inputs": "certify forge --ca-cert ca.pem --ca-key ca-key.pem --target admin@corp.local",
+        "expected_outputs": "Forged certificate with specified SAN",
+        "fixtures": ["ca_cert.pem", "ca_key.pem"],
+        "notes": "Uses RustCrypto, cross-platform"
+      }
+    ],
+    "end_to_end_tests": [
+      {
+        "test_id": "E2E-001",
+        "description": "Full enumeration workflow on test AD domain",
+        "setup": "Test AD domain with vulnerable templates and CAs",
+        "inputs": "certify enum-templates --vulnerable && certify enum-cas --vulnerable",
+        "expected_outputs": "Identified vulnerabilities match known issues in test domain",
+        "fixtures": ["test_domain_setup.ps1"],
+        "environment": "Requires Windows test AD domain"
+      },
+      {
+        "test_id": "E2E-002",
+        "description": "Certificate request and download workflow",
+        "setup": "Test AD CS infrastructure",
+        "inputs": "certify request --ca TestCA --template User && certify download --request-id <ID>",
+        "expected_outputs": "Issued certificate downloaded successfully",
+        "fixtures": ["test_ca_setup.ps1"],
+        "environment": "Requires Windows test CA"
+      }
+    ],
+    "test_data_generation": {
+      "ldap_fixtures": "Export real LDAP objects from test AD domain using ldifde",
+      "certificate_fixtures": "Generate test certificates with OpenSSL or Windows CA",
+      "binary_fixtures": "Capture binary structures (ACEs, LDAP attributes) from test queries",
+      "golden_outputs": "Run C# Certify on test data, save outputs as expected results"
+    }
+  },
+  "verification_commands": {
+    "build": [
+      "cargo build --workspace --all-targets",
+      "cargo build --workspace --all-targets --target x86_64-pc-windows-msvc",
+      "cargo build --workspace --all-targets --target x86_64-unknown-linux-gnu"
+    ],
+    "test": [
+      "cargo test --workspace",
+      "cargo test --workspace --target x86_64-pc-windows-msvc",
+      "cargo test --workspace --target x86_64-unknown-linux-gnu"
+    ],
+    "lint": [
+      "cargo clippy --workspace --all-targets -- -D warnings",
+      "cargo fmt --all -- --check"
+    ],
+    "audit": [
+      "cargo audit",
+      "cargo deny check"
+    ],
+    "release_build": [
+      "cargo build --release --target x86_64-pc-windows-msvc",
+      "cargo build --release --target x86_64-unknown-linux-gnu"
+    ],
+    "binary_compatibility": [
+      "Run C# Certify on test domain, save output to csharp_output.txt",
+      "Run Rust certify on same test domain, save output to rust_output.txt",
+      "diff -u csharp_output.txt rust_output.txt (should show only minor formatting differences)"
+    ],
+    "functional_parity": [
+      "For each command, run C# and Rust versions with identical inputs",
+      "Compare outputs for: template enumeration, CA enumeration, vulnerability detection",
+      "Verify binary outputs (CSRs, certificates) are valid and identical in structure"
+    ],
+    "security_validation": [
+      "Verify no secrets in code or config (git-secrets hook)",
+      "Verify minimal privilege execution (run as non-admin user where possible)",
+      "Verify audit logging for all privileged operations",
+      "Verify no stealth/evasion features beyond original C# implementation"
+    ]
+  },
+  "external_crates": [
+    {
+      "name": "windows",
+      "version": "0.52.0",
+      "purpose": "Windows API bindings (COM, Registry, Crypto, Security)",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high (official Microsoft crate)",
+      "maintenance": "Active (Microsoft-maintained)",
+      "security_rationale": "Official bindings, well-audited, required for Windows functionality",
+      "alternatives": "windows-sys (lower-level), winapi (older)"
+    },
+    {
+      "name": "ldap3",
+      "version": "0.11.0",
+      "purpose": "LDAP client for Active Directory queries",
+      "license": "MIT",
+      "popularity": "High (most popular Rust LDAP client)",
+      "maintenance": "Active",
+      "security_rationale": "Pure Rust, memory-safe, supports LDAPS",
+      "alternatives": "ldap3-async (async version)"
+    },
+    {
+      "name": "clap",
+      "version": "4.4.0",
+      "purpose": "CLI argument parsing (replaces CommandLineParser)",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high (de facto standard)",
+      "maintenance": "Active",
+      "security_rationale": "Well-maintained, no known vulnerabilities, actively audited",
+      "features": ["derive"]
+    },
+    {
+      "name": "thiserror",
+      "version": "1.0.0",
+      "purpose": "Custom error type derivation",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high",
+      "maintenance": "Active (David Tolnay)",
+      "security_rationale": "Simple macro, no runtime code, widely trusted"
+    },
+    {
+      "name": "anyhow",
+      "version": "1.0.0",
+      "purpose": "Error handling for application code",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high",
+      "maintenance": "Active (David Tolnay)",
+      "security_rationale": "Simple error propagation, widely used"
+    },
+    {
+      "name": "x509-cert",
+      "version": "0.2.0",
+      "purpose": "X.509 certificate parsing and generation",
+      "license": "Apache-2.0 OR MIT",
+      "popularity": "High (RustCrypto project)",
+      "maintenance": "Active",
+      "security_rationale": "RustCrypto project, audited, memory-safe"
+    },
+    {
+      "name": "rsa",
+      "version": "0.9.0",
+      "purpose": "RSA key generation and operations",
+      "license": "Apache-2.0 OR MIT",
+      "popularity": "High (RustCrypto)",
+      "maintenance": "Active",
+      "security_rationale": "RustCrypto project, audited implementations"
+    },
+    {
+      "name": "pkcs8",
+      "version": "0.10.0",
+      "purpose": "PKCS#8 private key encoding",
+      "license": "Apache-2.0 OR MIT",
+      "popularity": "High (RustCrypto)",
+      "maintenance": "Active",
+      "security_rationale": "RustCrypto project, standard formats"
+    },
+    {
+      "name": "pkcs12",
+      "version": "0.1.0",
+      "purpose": "PKCS#12 (PFX) format support",
+      "license": "Apache-2.0 OR MIT",
+      "popularity": "Medium (RustCrypto)",
+      "maintenance": "Active",
+      "security_rationale": "RustCrypto project, replaces BouncyCastle"
+    },
+    {
+      "name": "pem",
+      "version": "3.0.0",
+      "purpose": "PEM encoding/decoding",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "High",
+      "maintenance": "Active",
+      "security_rationale": "Simple text encoding, widely used"
+    },
+    {
+      "name": "der",
+      "version": "0.7.0",
+      "purpose": "ASN.1 DER encoding/decoding",
+      "license": "Apache-2.0 OR MIT",
+      "popularity": "High (RustCrypto)",
+      "maintenance": "Active",
+      "security_rationale": "RustCrypto project, safe DER implementation"
+    },
+    {
+      "name": "bitflags",
+      "version": "2.4.0",
+      "purpose": "Type-safe flag enums (msPKICertificateNameFlag, etc.)",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high",
+      "maintenance": "Active",
+      "security_rationale": "Simple macro, compile-time safety"
+    },
+    {
+      "name": "serde",
+      "version": "1.0.0",
+      "purpose": "Serialization framework (for test fixtures, config)",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high",
+      "maintenance": "Active",
+      "security_rationale": "De facto standard, widely audited",
+      "features": ["derive"]
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.0",
+      "purpose": "JSON serialization for test fixtures",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high",
+      "maintenance": "Active",
+      "security_rationale": "Widely used, well-tested"
+    },
+    {
+      "name": "reqwest",
+      "version": "0.11.0",
+      "purpose": "HTTP client for CA web service checks",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high",
+      "maintenance": "Active",
+      "security_rationale": "Popular HTTP client, supports NTLM with windows-auth feature",
+      "features": ["blocking", "rustls-tls"]
+    },
+    {
+      "name": "chrono",
+      "version": "0.4.0",
+      "purpose": "Date/time handling for certificate validity periods",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high",
+      "maintenance": "Active",
+      "security_rationale": "Standard datetime library, widely used"
+    },
+    {
+      "name": "log",
+      "version": "0.4.0",
+      "purpose": "Logging facade",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high",
+      "maintenance": "Active",
+      "security_rationale": "Standard logging interface"
+    },
+    {
+      "name": "env_logger",
+      "version": "0.11.0",
+      "purpose": "Logger implementation (configurable via RUST_LOG)",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "Very high",
+      "maintenance": "Active",
+      "security_rationale": "Simple logger, no network/file I/O by default"
+    },
+    {
+      "name": "scopeguard",
+      "version": "1.2.0",
+      "purpose": "Defer cleanup actions (equivalent to finally blocks)",
+      "license": "MIT OR Apache-2.0",
+      "popularity": "High",
+      "maintenance": "Active",
+      "security_rationale": "Simple macro for RAII, widely used"
+    },
+    {
+      "name": "nom",
+      "version": "7.1.0",
+      "purpose": "Binary parser combinator (for LDAP attributes, security descriptors)",
+      "license": "MIT",
+      "popularity": "Very high",
+      "maintenance": "Active",
+      "security_rationale": "Well-tested parser framework, safe parsing",
+      "notes": "Optional, consider for complex binary parsing"
+    }
+  ],
+  "architecture_recommendations": {
+    "module_structure": {
+      "src/main.rs": "Entry point, CLI parsing with clap",
+      "src/lib.rs": "Library root, re-exports public API",
+      "src/commands/": "Command implementations (enum_cas, enum_templates, request, etc.)",
+      "src/domain/": "Domain models (CertificateAuthority, CertificateTemplate, etc.)",
+      "src/lib/": "Core library (LDAP operations, certificate enrollment, CA admin)",
+      "src/util/": "Utilities (DCOM, elevation, display, crypto transforms)",
+      "src/platform/": "Platform-specific code (Windows vs Linux stubs)",
+      "src/error.rs": "Unified error types",
+      "tests/": "Integration tests",
+      "tests/fixtures/": "Test data (LDAP exports, certificates, golden outputs)"
+    },
+    "platform_abstraction": {
+      "strategy": "Isolate Windows-only code behind traits, provide Linux stubs",
+      "windows_features": "Use #[cfg(target_os = \"windows\")] for COM, Registry, DCOM",
+      "linux_stubs": "Return NotSupported error on Linux for Windows-only features",
+      "cross_platform": "LDAP client, crypto operations work on both platforms"
+    },
+    "error_handling": {
+      "strategy": "Define CertifyError enum with variants for each subsystem",
+      "variants": ["LdapError", "ComError", "CryptoError", "RegistryError", "ElevationError", "DisplayError", "IoError"],
+      "implementation": "Use thiserror for Error trait derivation, anyhow for application errors",
+      "context": "Provide detailed error context with file/line, operation description"
+    },
+    "safety_guidelines": {
+      "unsafe_usage": "Minimize unsafe blocks, isolate in dedicated modules with extensive documentation",
+      "ffi_safety": "All P/Invoke and COM calls must be wrapped in safe abstractions",
+      "lifetime_management": "Use RAII pattern (Drop trait) for all resources (COM objects, tokens, handles)",
+      "audit_trail": "All unsafe blocks require comment explaining safety invariants"
+    },
+    "testing_strategy": {
+      "unit_tests": "Test each module in isolation with mock data",
+      "integration_tests": "Test command execution with mock LDAP server",
+      "e2e_tests": "Test against real AD CS infrastructure in test environment",
+      "golden_tests": "Compare outputs with C# Certify golden outputs",
+      "ci_tests": "Unit tests run on Linux, integration tests require Windows runner"
+    },
+    "logging_and_telemetry": {
+      "log_levels": "ERROR for failures, WARN for suspicious conditions, INFO for operations, DEBUG for details, TRACE for crypto/LDAP",
+      "audit_events": "Log all privileged operations (impersonation, CA management, certificate requests)",
+      "pii_handling": "Avoid logging passwords, private keys, full certificates (log thumbprints only)",
+      "operational_visibility": "Provide progress indicators for long operations (LDAP queries, certificate requests)"
+    }
+  },
+  "security_considerations": {
+    "privilege_requirements": {
+      "enumeration_commands": "Standard user with domain access",
+      "request_commands": "Standard user with enrollment rights",
+      "management_commands": "CA admin or equivalent privileges",
+      "impersonation": "SYSTEM or admin privileges (for ElevationUtil)"
+    },
+    "runtime_hardening": {
+      "user_context": "Run as unprivileged user when possible, elevate only for specific operations",
+      "secrets_management": "Never embed credentials, use Windows Credential Manager or external vault",
+      "input_validation": "Validate all user inputs (server names, template names, OIDs) before use",
+      "network_security": "Use LDAPS for LDAP queries, validate TLS certificates"
+    },
+    "audit_and_logging": {
+      "privileged_operations": "Log all CA management, template modification, certificate requests",
+      "authentication": "Log LDAP bind attempts, DCOM connections",
+      "output_redirection": "Support --out-file for audit logs",
+      "syslog_integration": "Consider Windows Event Log integration for centralized logging"
+    },
+    "detection_considerations": {
+      "defensive_guidance": "Tool usage is detectable via LDAP queries, CA logs, certificate requests",
+      "indicators": "Unusual LDAP queries, certificate requests with custom SANs, CA configuration changes",
+      "mitigation": "Use tool responsibly, only on authorized systems, document usage",
+      "yara_rules": "Original C# Certify has YARA rules; Rust version should have similar signatures"
+    }
+  },
+  "ci_cd_recommendations": {
+    "github_actions": {
+      "build_workflow": "Build on Linux and Windows runners, test cross-compilation",
+      "test_workflow": "Unit tests on Linux, integration tests on Windows with mock AD",
+      "lint_workflow": "clippy and rustfmt checks, fail on warnings",
+      "audit_workflow": "cargo audit and cargo deny, fail on vulnerabilities",
+      "release_workflow": "Build release binaries, sign with code signing certificate"
+    },
+    "artifacts": {
+      "binaries": "certify.exe (Windows), certify (Linux)",
+      "checksums": "SHA256SUMS.txt with artifact hashes",
+      "sbom": "Generate SBOM with cargo-sbom",
+      "signatures": "Sign binaries with authenticode (Windows) or GPG (Linux)"
+    },
+    "security_scanning": {
+      "dependency_audit": "cargo audit in CI, fail on high/critical",
+      "license_check": "cargo deny for license compliance",
+      "sast": "Consider clippy pedantic mode for additional checks",
+      "reproducible_builds": "Document build environment, use rust-toolchain file"
+    }
+  },
+  "migration_notes": {
+    "disarmed_mode": "C# has DISARMED build configuration (read-only). Rust port should support similar feature flag: --features disarmed",
+    "reflection_elimination": "C# uses Type.GetTypeFromProgID() for COM objects. Rust uses static COM interfaces, no reflection needed",
+    "inheritance_to_composition": "C# uses inheritance (CertificateAuthorityEnterprise : CertificateAuthority). Rust uses struct composition",
+    "exception_to_result": "All C# exceptions converted to Result<T, CertifyError> with detailed error context",
+    "idisposable_to_drop": "All C# IDisposable types use Drop trait in Rust for automatic cleanup",
+    "nullable_references": "C# uses nullable reference types (string?). Rust uses Option<String>",
+    "async_consideration": "C# is synchronous. Consider async/await for LDAP and HTTP operations in Rust for better concurrency"
+  },
+  "cross_platform_status": {
+    "windows_only": [
+      "COM interop (CERTENROLLLib, CERTCLILib)",
+      "DCOM remote instantiation",
+      "Registry access (local and remote)",
+      "Token impersonation (ElevationUtil)",
+      "Windows cryptography APIs (crypt32.dll, secur32.dll)",
+      "Certificate store operations"
+    ],
+    "cross_platform": [
+      "LDAP queries (using ldap3 crate)",
+      "Certificate forgery (using RustCrypto)",
+      "PEM/PFX conversion (using RustCrypto)",
+      "Vulnerability detection logic",
+      "CLI parsing and output formatting"
+    ],
+    "linux_support": {
+      "enumeration": "Partially supported (LDAP queries work, but no access to Windows-specific attributes)",
+      "request": "Not supported (requires CERTENROLLLib COM)",
+      "management": "Not supported (requires DCOM and COM)",
+      "forge": "Fully supported (pure crypto, no Windows APIs)",
+      "recommendation": "Provide clear error messages on Linux for Windows-only features"
+    }
+  },
+  "estimated_total_effort": {
+    "development_hours": 270,
+    "testing_hours": 80,
+    "documentation_hours": 30,
+    "ci_setup_hours": 20,
+    "total_hours": 400,
+    "estimated_duration_weeks": "10-12 weeks (1 developer)",
+    "notes": "Assumes experienced Rust developer familiar with Windows APIs and Active Directory"
+  }
+}
