@@ -309,6 +309,16 @@ impl CertificateTemplate {
         &self.display_name
     }
 
+    /// Returns the validity period
+    pub fn validity_period(&self) -> Option<&str> {
+        self.validity_period.as_deref()
+    }
+
+    /// Returns the renewal period
+    pub fn renewal_period(&self) -> Option<&str> {
+        self.renewal_period.as_deref()
+    }
+
     /// Returns the certificate name flags
     pub fn certificate_name_flag(&self) -> MsPkiCertificateNameFlag {
         self.certificate_name_flag
