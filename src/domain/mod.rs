@@ -4,6 +4,7 @@
 //! Certificate Services objects like CAs, templates, and PKI objects.
 
 pub mod ad_object;
+pub mod ca_enterprise;
 pub mod ca_web_services;
 pub mod certificate_authority;
 pub mod certificate_template;
@@ -13,6 +14,7 @@ pub mod pki_object;
 
 // Re-export common types
 pub use ad_object::{ADObject, SecurityDescriptor};
+pub use ca_enterprise::{CertificateAuthorityEnterprise, EditFlags, InterfaceFlags};
 pub use ca_web_services::CertificateAuthorityWebServices;
 pub use certificate_authority::{
     CertificateAuthority, CertificationAuthorityRights, PkiCertificateAuthorityFlags,
