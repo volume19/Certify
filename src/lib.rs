@@ -11,6 +11,7 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 #![warn(missing_docs)]
 
+pub mod certify_lib;
 pub mod domain;
 pub mod error;
 pub mod util;
