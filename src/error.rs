@@ -9,6 +9,10 @@ pub enum CertifyError {
     #[error("LDAP error: {0}")]
     Ldap(String),
 
+    /// Parsing error
+    #[error("Parse error: {0}")]
+    Parse(String),
+
     /// COM interop error (Windows-only)
     #[error("COM error: {0}")]
     Com(String),

@@ -22,6 +22,7 @@ anyhow = "1.0"
 regex = "1.10"
 uuid = { version = "1.11", features = ["v4"] }
 bitflags = "2.4"
+ldap3 = "0.11"
 
 [dev-dependencies]
 serde = { version = "1.0", features = ["derive"] }
