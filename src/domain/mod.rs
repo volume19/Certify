@@ -6,6 +6,7 @@
 pub mod ad_object;
 pub mod ca_web_services;
 pub mod certificate_authority;
+pub mod certificate_template;
 pub mod enrollment_agent_restriction;
 pub mod oids;
 pub mod pki_object;
@@ -16,6 +17,9 @@ pub use ca_web_services::CertificateAuthorityWebServices;
 pub use certificate_authority::{
     CertificateAuthority, CertificationAuthorityRights, PkiCertificateAuthorityFlags,
     X509Certificate,
+};
+pub use certificate_template::{
+    CertificateEnterpriseOid, CertificateTemplate, MsPkiCertificateNameFlag, MsPkiEnrollmentFlag,
 };
 pub use enrollment_agent_restriction::EnrollmentAgentRestriction;
 pub use oids::*;
