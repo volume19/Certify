@@ -4,9 +4,9 @@
 
 This document tracks the progress of porting the **Certify** Active Directory Certificate Services enumeration tool from C# (.NET Framework 4.7.2) to Rust. The port aims to create a memory-safe, cross-platform (where possible) version while maintaining full feature parity with the original implementation.
 
-**Current Status:** Phases 1-4 Complete (Foundation + Core Models + Vulnerability Detection + LDAP/Display)
-**Progress:** ~35% of total implementation
-**Tests:** 123 passing (100 unit + 23 doc) - 100% pass rate
+**Current Status:** Phases 1-5 Complete (Foundation + Core + Vulnerability Detection + LDAP/Display + Windows Utils)
+**Progress:** ~40% of total implementation
+**Tests:** 137 passing (111 unit + 26 doc) - 100% pass rate
 **Code Quality:** Zero compiler warnings, follows Rust best practices
 
 ---
@@ -108,12 +108,34 @@ This document tracks the progress of porting the **Certify** Active Directory Ce
 
 ---
 
+### Phase 5: Windows-Specific Utilities (Complete - 2/2 iterations)
+
+**Objective:** Implement Windows COM and token manipulation utilities.
+
+| Component | Status | LOC | Tests | Description |
+|-----------|--------|-----|-------|-------------|
+| ComUtil | ✅ | 285 | 5+1 | COM initialization and DCOM security |
+| ElevationUtil | ✅ | 380 | 6+2 | Token impersonation and privilege elevation |
+
+**Key Achievements:**
+- ✅ ComContext RAII guard for COM lifecycle management
+- ✅ CoInitializeEx/CoUninitialize with threading model support
+- ✅ CoInitializeSecurity for DCOM authentication
+- ✅ TokenImpersonation RAII guard for token management
+- ✅ enable_privilege() for AdjustTokenPrivileges
+- ✅ is_elevated() to check administrator status
+- ✅ Platform-specific #[cfg(target_os = "windows")] guards
+- ✅ Non-Windows stubs returning NotSupported errors
+- ✅ **137 tests passing (111 unit + 26 doc)**
+
+---
+
 ## 📊 Current Statistics
 
 ### Code Metrics
-- **Total Lines of Code:** ~4,800+ lines
-- **Modules Created:** 18 Rust modules
-- **Tests:** 123 (100% passing)
+- **Total Lines of Code:** ~5,400+ lines
+- **Modules Created:** 20 Rust modules
+- **Tests:** 137 (100% passing)
 - **Test Coverage:** All public APIs covered
 - **Documentation:** Full rustdoc for all public items
 
@@ -125,10 +147,14 @@ regex = "1.10"        # Pattern matching
 uuid = "1.11"         # GUID support
 bitflags = "2.4"      # Flag enums
 ldap3 = "0.11"        # LDAP connectivity
+
+[target.'cfg(windows)'.dependencies]
+windows = "0.52"      # Windows API (COM, Security, Threading)
 ```
 
 ### Git History
 ```
+0195244 Phase 5 Complete: Windows-Specific Utilities
 18407b2 Phase 4 Complete: LDAP Operations and Display Utilities
 0b3733e Phase 4 Iteration 1: Implement LdapOperations module
 f77f6df Phase 3 Iteration 2: CertificateAuthorityEnterprise (ESC6-16)
@@ -142,24 +168,6 @@ c013699 Phase 1 Iteration 3: SID utility
 ---
 
 ## 🔄 Remaining Work
-
----
-
-### Phase 5: Windows-Specific Utilities (Estimated: 14 hours)
-
-**Status:** Not started
-
-| Component | LOC (Est) | Priority | Platform | Dependencies |
-|-----------|-----------|----------|----------|--------------|
-| DistributedComUtil | 116 | High | Windows | windows-rs COM |
-| ElevationUtil | 104 | Medium | Windows | Token APIs |
-
-**Blockers:**
-- Windows-only (COM, token APIs)
-- Requires windows-rs crate configuration
-- DCOM remote instantiation
-
----
 
 ### Phase 6: Cryptography and Certificate Operations (Estimated: 38 hours)
 
@@ -313,20 +321,20 @@ c013699 Phase 1 Iteration 3: SID utility
 | Phase 2 | ✅ Complete | 100% | 41 |
 | Phase 3 | ✅ Complete | 100% | 17 |
 | Phase 4 | ✅ Complete | 100% | 18 |
-| Phase 5 | ⏳ Pending | 0% | 0 |
+| Phase 5 | ✅ Complete | 100% | 14 |
 | Phase 6 | ⏳ Pending | 0% | 0 |
 | Phase 7 | ⏳ Pending | 0% | 0 |
 | Phases 8-10 | ⏳ Pending | 0% | 0 |
 | Phase 11 | ⏳ Pending | 0% | 0 |
-| **TOTAL** | **In Progress** | **~35%** | **123** |
+| **TOTAL** | **In Progress** | **~40%** | **137** |
 
 ### Estimated Remaining Work
 
 | Category | Hours (Est) | Percentage |
 |----------|-------------|------------|
-| Completed (Phases 1-4) | ~108 | 35% |
+| Completed (Phases 1-5) | ~122 | 40% |
 | LDAP/Display (Phase 4) | ✅ Complete | - |
-| Windows Utils (Phase 5) | 14 | 4% |
+| Windows Utils (Phase 5) | ✅ Complete | - |
 | Crypto (Phase 6) | 38 | 12% |
 | Enrollment/Admin (Phase 7) | 46 | 14% |
 | Commands (Phases 8-10) | 116 | 29% |
@@ -412,35 +420,39 @@ c013699 Phase 1 Iteration 3: SID utility
 
 ## 📝 Conclusion
 
-The foundational work (Phases 1-4) represents the most architecturally challenging portion of the port. All core types, binary parsing, vulnerability detection, LDAP connectivity, and display formatting are now implemented in idiomatic Rust.
+The foundational work (Phases 1-5) represents the most architecturally challenging portion of the port. All core types, binary parsing, vulnerability detection, LDAP connectivity, display formatting, and Windows COM/token utilities are now implemented in idiomatic Rust.
 
 **Completed Infrastructure:**
 - **Phases 1-3:** Core domain models, vulnerability detection, binary parsing
 - **Phase 4:** LDAP operations and display utilities
+- **Phase 5:** Windows COM and token impersonation utilities
 
 The remaining phases are more straightforward:
-- **Phase 5-7:** Utility implementations (Windows COM, crypto, HTTP)
+- **Phase 6-7:** Utility implementations (crypto, HTTP, certificate enrollment)
 - **Phase 8-11:** Command wrappers around existing functionality
 
 **Quality Metrics:**
 - ✅ Zero compiler warnings
-- ✅ 100% test pass rate (123 tests)
+- ✅ 100% test pass rate (137 tests)
 - ✅ Full documentation coverage
 - ✅ Idiomatic Rust patterns
+- ✅ Cross-platform support (with Windows-specific features)
 
 **Production Readiness:**
 - ✅ Core domain models stable
 - ✅ Vulnerability detection accurate
 - ✅ LDAP integration complete
 - ✅ Display formatting implemented
+- ✅ Windows COM interop implemented
+- ✅ Token impersonation utilities ready
 - ⚠️ Missing command implementations
-- ⚠️ Missing Windows COM interop
 - ⚠️ Missing cryptography operations
+- ⚠️ Missing certificate enrollment COM interop
 
-The project is on track for completion with an estimated **~220 hours** of remaining development work.
+The project is on track for completion with an estimated **~206 hours** of remaining development work.
 
 ---
 
-*Last Updated: 2025-11-08*
+*Last Updated: 2025-11-09*
 *Branch: `claude/csharp-to-rust-port-011CUutjWPasKYRMMz4rtNbb`*
-*Commits: 9 | Tests: 123 | LOC: 4,800+*
+*Commits: 11 | Tests: 137 | LOC: 5,400+*
