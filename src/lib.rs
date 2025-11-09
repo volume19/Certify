@@ -14,6 +14,7 @@
 pub mod certify_lib;
 pub mod crypto;
 pub mod domain;
+pub mod enrollment;
 pub mod error;
 pub mod util;
 
