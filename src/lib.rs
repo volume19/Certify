@@ -12,6 +12,7 @@
 #![warn(missing_docs)]
 
 pub mod certify_lib;
+pub mod commands;
 pub mod crypto;
 pub mod domain;
 pub mod enrollment;

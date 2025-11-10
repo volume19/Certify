@@ -4,9 +4,9 @@
 
 This document tracks the progress of porting the **Certify** Active Directory Certificate Services enumeration tool from C# (.NET Framework 4.7.2) to Rust. The port aims to create a memory-safe, cross-platform (where possible) version while maintaining full feature parity with the original implementation.
 
-**Current Status:** Phases 1-7 Complete (Foundation + Core + Vuln Detection + LDAP/Display + Windows + Crypto + Enrollment)
-**Progress:** ~58% of total implementation
-**Tests:** 150 unit tests passing - 100% pass rate
+**Current Status:** Phases 1-8 Complete (All Infrastructure + Read-Only Commands)
+**Progress:** ~67% of total implementation
+**Tests:** 164 unit tests passing - 100% pass rate
 **Code Quality:** Clean compilation, follows Rust best practices
 
 ---
@@ -185,12 +185,35 @@ This document tracks the progress of porting the **Certify** Active Directory Ce
 
 ---
 
+### Phase 8: Read-Only Command Implementations (Complete - 1/1 iteration)
+
+**Objective:** Implement enumeration commands for PKI objects, CAs, and templates.
+
+| Component | Status | LOC | Tests | Description |
+|-----------|--------|-----|-------|-------------|
+| EnumPkiObjects | ✅ | 173 | 3 | Generic PKI object enumeration |
+| EnumCas | ✅ | 252 | 5 | Enterprise CA enumeration with vulnerability filtering |
+| EnumTemplates | ✅ | 361 | 6 | Template enumeration with ESC filtering |
+
+**Key Achievements:**
+- ✅ Builder pattern configuration for all commands
+- ✅ LDAP connectivity integration with Phase 4 infrastructure
+- ✅ Vulnerability filtering (vulnerable_only option)
+- ✅ ESC-specific filtering for template enumeration
+- ✅ Detailed and summary output modes
+- ✅ Formatted output using Phase 4 display utilities
+- ✅ Comprehensive error handling
+- ✅ Full test coverage for all config builders
+- ✅ **164 unit tests passing**
+
+---
+
 ## 📊 Current Statistics
 
 ### Code Metrics
-- **Total Lines of Code:** ~7,550+ lines
-- **Modules Created:** 25 Rust modules
-- **Tests:** 150 unit tests (100% passing)
+- **Total Lines of Code:** ~8,330+ lines
+- **Modules Created:** 29 Rust modules
+- **Tests:** 164 unit tests (100% passing)
 - **Test Coverage:** All public APIs covered
 - **Documentation:** Full rustdoc for all public items
 
@@ -225,14 +248,7 @@ f77f6df Phase 3 Iteration 2: CertificateAuthorityEnterprise (ESC6-16)
 
 ## 🔄 Remaining Work
 
-### Phases 8-10: Command Implementations (Estimated: 116 hours)
-
-**Status:** Not started
-
-**Read-Only Commands (Phase 8):**
-- ✗ EnumPkiObjects (112 LOC)
-- ✗ EnumCas (224 LOC)
-- ✗ EnumTemplates (251 LOC)
+### Phases 9-10: Remaining Command Implementations (Estimated: ~80 hours)
 
 **Certificate Request Commands (Phase 9):**
 - ✗ CertRequestDownload (104 LOC)
@@ -347,23 +363,22 @@ f77f6df Phase 3 Iteration 2: CertificateAuthorityEnterprise (ESC6-16)
 | Phase 5 | ✅ Complete | 100% | 14 |
 | Phase 6 | ✅ Complete | 100% | 37 |
 | Phase 7 | ✅ Complete | 100% | 10 |
-| Phases 8-10 | ⏳ Pending | 0% | 0 |
+| Phase 8 | ✅ Complete | 100% | 14 |
+| Phases 9-10 | ⏳ Pending | 0% | 0 |
 | Phase 11 | ⏳ Pending | 0% | 0 |
-| **TOTAL** | **In Progress** | **~58%** | **150** |
+| **TOTAL** | **In Progress** | **~67%** | **164** |
 
 ### Estimated Remaining Work
 
 | Category | Hours (Est) | Percentage |
 |----------|-------------|------------|
-| Completed (Phases 1-7) | ~190 | 58% |
-| LDAP/Display (Phase 4) | ✅ Complete | - |
-| Windows Utils (Phase 5) | ✅ Complete | - |
-| Crypto (Phase 6) | ✅ Complete | - |
-| Enrollment/Admin (Phase 7) | ✅ Complete | - |
-| Commands (Phases 8-10) | 116 | 35% |
-| CLI (Phase 11) | 6 | 2% |
-| Testing & Integration | 15 | 5% |
-| **TOTAL** | **~327** | **100%** |
+| Completed (Phases 1-8) | ~220 | 67% |
+| Read-Only Commands (Phase 8) | ✅ Complete | - |
+| Request Commands (Phase 9) | 40 | 12% |
+| Management Commands (Phase 10) | 40 | 12% |
+| CLI (Phase 11) | 20 | 6% |
+| Testing & Integration | 10 | 3% |
+| **TOTAL** | **~330** | **100%** |
 
 ---
 
@@ -443,7 +458,7 @@ f77f6df Phase 3 Iteration 2: CertificateAuthorityEnterprise (ESC6-16)
 
 ## 📝 Conclusion
 
-The foundational work (Phases 1-7) represents the most architecturally challenging portion of the port. All core types, binary parsing, vulnerability detection, LDAP connectivity, display formatting, Windows COM/token utilities, cryptographic operations, and certificate enrollment frameworks are now implemented in idiomatic Rust.
+The foundational work (Phases 1-7) and read-only commands (Phase 8) represent the most architecturally challenging portion of the port. All core infrastructure and enumeration capabilities are now complete.
 
 **Completed Infrastructure:**
 - **Phases 1-3:** Core domain models, vulnerability detection, binary parsing
@@ -451,14 +466,15 @@ The foundational work (Phases 1-7) represents the most architecturally challengi
 - **Phase 5:** Windows COM and token impersonation utilities
 - **Phase 6:** Cryptography, ASN.1 encoding, certificate conversion, HTTP framework
 - **Phase 7:** Certificate enrollment and CA administration frameworks
+- **Phase 8:** Read-only enumeration commands (PKI objects, CAs, templates)
 
-The remaining phases focus on command implementations:
-- **Phases 8-10:** Command implementations (read-only, certificate requests, management)
+The remaining phases focus on certificate operations and CLI:
+- **Phases 9-10:** Certificate request and management commands
 - **Phase 11:** CLI entry point and argument parsing
 
 **Quality Metrics:**
 - ✅ Clean compilation
-- ✅ 100% test pass rate (150 unit tests)
+- ✅ 100% test pass rate (164 unit tests)
 - ✅ Full documentation coverage
 - ✅ Idiomatic Rust patterns
 - ✅ Cross-platform support (with Windows-specific features)
@@ -472,13 +488,14 @@ The remaining phases focus on command implementations:
 - ✅ Token impersonation utilities ready
 - ✅ Cryptographic utilities complete (ASN.1, PEM/DER, HTTP)
 - ✅ Enrollment framework complete (ready for COM implementation)
-- ⚠️ Missing command implementations
+- ✅ Read-only enumeration commands complete
+- ⚠️ Missing certificate request/management commands
 - ⚠️ Windows COM API calls are placeholders
 
-The project is on track for completion with an estimated **~137 hours** of remaining development work.
+The project is on track for completion with an estimated **~110 hours** of remaining development work.
 
 ---
 
 *Last Updated: 2025-11-10*
 *Branch: `claude/csharp-to-rust-port-011CUutjWPasKYRMMz4rtNbb`*
-*Commits: 14 | Tests: 150 | LOC: 7,550+*
+*Commits: 15 | Tests: 164 | LOC: 8,330+*
