@@ -4,9 +4,9 @@
 
 This document tracks the progress of porting the **Certify** Active Directory Certificate Services enumeration tool from C# (.NET Framework 4.7.2) to Rust. The port aims to create a memory-safe, cross-platform (where possible) version while maintaining full feature parity with the original implementation.
 
-**Current Status:** Phases 1-8 Complete (All Infrastructure + Read-Only Commands)
-**Progress:** ~67% of total implementation
-**Tests:** 164 unit tests passing - 100% pass rate
+**Current Status:** Phases 1-9 Complete (All Infrastructure + Enumeration + Certificate Requests)
+**Progress:** ~79% of total implementation
+**Tests:** 178 unit tests passing - 100% pass rate
 **Code Quality:** Clean compilation, follows Rust best practices
 
 ---
@@ -208,12 +208,44 @@ This document tracks the progress of porting the **Certify** Active Directory Ce
 
 ---
 
+### Phase 9: Certificate Request Commands (Complete - 1/1 iteration)
+
+**Objective:** Implement certificate request and renewal commands with ESC exploitation support.
+
+| Component | Status | LOC | Tests | Description |
+|-----------|--------|-----|-------|-------------|
+| CertRequestDownload | ✅ | 159 | 4 | Download previously issued certificates |
+| CertRequestRenewal | ✅ | 157 | 3 | Renew existing certificates |
+| CertRequest | ✅ | 233 | 4 | Request new certificates with optional ESC1 |
+| CertRequestOnBehalf | ✅ | 198 | 3 | Request certificates for other users (ESC3) |
+
+**Key Achievements:**
+- ✅ Full certificate enrollment integration with Phase 7
+- ✅ ESC1 exploitation support (custom subject in CertRequest)
+- ✅ ESC3 exploitation support (on-behalf-of enrollment)
+- ✅ Certificate download by request ID
+- ✅ Automatic certificate installation option
+- ✅ PEM/DER format conversion support
+- ✅ Machine context support
+- ✅ Comprehensive status reporting for all enrollment states
+- ✅ **178 unit tests passing**
+
+**Implementation Notes:**
+- Commands use Phase 7 enrollment framework
+- ESC1 allows arbitrary subject specification
+- ESC3 uses enrollment agent certificates
+- All enrollment states properly handled (Issued, Pending, Denied, Failed)
+- File I/O for certificate saving and loading
+- Format conversion using Phase 6 crypto utilities
+
+---
+
 ## 📊 Current Statistics
 
 ### Code Metrics
-- **Total Lines of Code:** ~8,330+ lines
-- **Modules Created:** 29 Rust modules
-- **Tests:** 164 unit tests (100% passing)
+- **Total Lines of Code:** ~9,100+ lines
+- **Modules Created:** 33 Rust modules
+- **Tests:** 178 unit tests (100% passing)
 - **Test Coverage:** All public APIs covered
 - **Documentation:** Full rustdoc for all public items
 
@@ -248,15 +280,9 @@ f77f6df Phase 3 Iteration 2: CertificateAuthorityEnterprise (ESC6-16)
 
 ## 🔄 Remaining Work
 
-### Phases 9-10: Remaining Command Implementations (Estimated: ~80 hours)
+### Phase 10: Management Commands (Estimated: ~40 hours)
 
-**Certificate Request Commands (Phase 9):**
-- ✗ CertRequestDownload (104 LOC)
-- ✗ CertRequestRenewal (119 LOC)
-- ✗ CertRequest (235 LOC)
-- ✗ CertRequestOnBehalf (157 LOC)
-
-**Write/Management Commands (Phase 10):**
+**Write/Management Commands:**
 - ✗ ManageSelf (294 LOC)
 - ✗ ManageTemplate (300 LOC)
 - ✗ CertForge (301 LOC)
@@ -364,17 +390,18 @@ f77f6df Phase 3 Iteration 2: CertificateAuthorityEnterprise (ESC6-16)
 | Phase 6 | ✅ Complete | 100% | 37 |
 | Phase 7 | ✅ Complete | 100% | 10 |
 | Phase 8 | ✅ Complete | 100% | 14 |
-| Phases 9-10 | ⏳ Pending | 0% | 0 |
+| Phase 9 | ✅ Complete | 100% | 14 |
+| Phase 10 | ⏳ Pending | 0% | 0 |
 | Phase 11 | ⏳ Pending | 0% | 0 |
-| **TOTAL** | **In Progress** | **~67%** | **164** |
+| **TOTAL** | **In Progress** | **~79%** | **178** |
 
 ### Estimated Remaining Work
 
 | Category | Hours (Est) | Percentage |
 |----------|-------------|------------|
-| Completed (Phases 1-8) | ~220 | 67% |
+| Completed (Phases 1-9) | ~260 | 79% |
 | Read-Only Commands (Phase 8) | ✅ Complete | - |
-| Request Commands (Phase 9) | 40 | 12% |
+| Request Commands (Phase 9) | ✅ Complete | - |
 | Management Commands (Phase 10) | 40 | 12% |
 | CLI (Phase 11) | 20 | 6% |
 | Testing & Integration | 10 | 3% |
@@ -458,7 +485,7 @@ f77f6df Phase 3 Iteration 2: CertificateAuthorityEnterprise (ESC6-16)
 
 ## 📝 Conclusion
 
-The foundational work (Phases 1-7) and read-only commands (Phase 8) represent the most architecturally challenging portion of the port. All core infrastructure and enumeration capabilities are now complete.
+The foundational work (Phases 1-7) and operational commands (Phases 8-9) represent the most architecturally challenging portion of the port. All core infrastructure, enumeration, and certificate request capabilities are now complete.
 
 **Completed Infrastructure:**
 - **Phases 1-3:** Core domain models, vulnerability detection, binary parsing
@@ -467,14 +494,15 @@ The foundational work (Phases 1-7) and read-only commands (Phase 8) represent th
 - **Phase 6:** Cryptography, ASN.1 encoding, certificate conversion, HTTP framework
 - **Phase 7:** Certificate enrollment and CA administration frameworks
 - **Phase 8:** Read-only enumeration commands (PKI objects, CAs, templates)
+- **Phase 9:** Certificate request commands (standard, ESC1, ESC3, renewal, download)
 
-The remaining phases focus on certificate operations and CLI:
-- **Phases 9-10:** Certificate request and management commands
+The remaining phases focus on management operations and CLI:
+- **Phase 10:** Management commands (certificate/template/CA administration)
 - **Phase 11:** CLI entry point and argument parsing
 
 **Quality Metrics:**
 - ✅ Clean compilation
-- ✅ 100% test pass rate (164 unit tests)
+- ✅ 100% test pass rate (178 unit tests)
 - ✅ Full documentation coverage
 - ✅ Idiomatic Rust patterns
 - ✅ Cross-platform support (with Windows-specific features)
@@ -489,13 +517,14 @@ The remaining phases focus on certificate operations and CLI:
 - ✅ Cryptographic utilities complete (ASN.1, PEM/DER, HTTP)
 - ✅ Enrollment framework complete (ready for COM implementation)
 - ✅ Read-only enumeration commands complete
-- ⚠️ Missing certificate request/management commands
+- ✅ Certificate request commands complete (ESC1, ESC3 support)
+- ⚠️ Missing management commands
 - ⚠️ Windows COM API calls are placeholders
 
-The project is on track for completion with an estimated **~110 hours** of remaining development work.
+The project is on track for completion with an estimated **~70 hours** of remaining development work.
 
 ---
 
 *Last Updated: 2025-11-10*
 *Branch: `claude/csharp-to-rust-port-011CUutjWPasKYRMMz4rtNbb`*
-*Commits: 15 | Tests: 164 | LOC: 8,330+*
+*Commits: 16 | Tests: 178 | LOC: 9,100+*
